@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+*.pyo
+venv
+chat_history.json
+chat_sessions.json
