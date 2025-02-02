@@ -4,3 +4,4 @@ __pycache__
 venv
 chat_history.json
 chat_sessions.json
+.DS_Store
