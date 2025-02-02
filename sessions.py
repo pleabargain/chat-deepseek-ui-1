@@ -57,6 +57,30 @@ def create_new_session():
         st.success(f"✅ Created new session: {session_name}")
         st.rerun()  # Refresh UI
 
+def rename_session(old_name):
+    """Renames an existing chat session."""
+    if old_name == "Default":
+        st.warning("The 'Default' session cannot be renamed.")
+        return  # Exit the function if the session name is 'Default'
+
+    new_name = st.text_input(f"Rename '{old_name}' to:", key=f"rename_{old_name}")
+    if st.button("Save", key=f"save_{old_name}"):
+        if new_name and new_name not in st.session_state["sessions"]:
+            st.session_state["sessions"].remove(old_name)
+            st.session_state["sessions"].append(new_name)
+            st.session_state["messages"][new_name] = st.session_state["messages"].pop(old_name)
+
+            if st.session_state["active_session"] == old_name:
+                st.session_state["active_session"] = new_name
+
+            save_json_file(SESSION_FILE, st.session_state["sessions"])
+            save_json_file(CHAT_HISTORY_FILE, st.session_state["messages"])
+
+            st.success(f"Renamed '{old_name}' to '{new_name}'")
+            st.rerun()
+        else:
+            st.warning("Invalid or duplicate session name!")
+
 def switch_session(session_name):
     """Switches to an existing chat session."""
     st.session_state["active_session"] = session_name
@@ -64,6 +88,10 @@ def switch_session(session_name):
 
 def delete_session(session_name):
     """Deletes a chat session."""
+    if session_name == "Default":
+        st.warning("The 'Default' session cannot be deleted.")
+        return  # Exit the function if trying to delete 'Default'
+
     if session_name in st.session_state["sessions"]:
         st.session_state["sessions"].remove(session_name)
         st.session_state["messages"].pop(session_name, None)

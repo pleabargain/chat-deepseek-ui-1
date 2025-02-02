@@ -2,7 +2,7 @@ import base64
 import streamlit as st
 from input_handle import handle_user_input
 from const import DEFAULT_MESSAGE
-from sessions import create_new_session, delete_session, switch_session
+from sessions import create_new_session, rename_session, delete_session, switch_session
 from utils import display_chat_history, get_base64_image
 
 def render_ui():
@@ -33,13 +33,31 @@ def display_sidebar():
         """, unsafe_allow_html=True)
         st.title("💬 Chat Sessions")
         for session_name in st.session_state["sessions"]:
-            if st.button(session_name, key=f"session_{session_name}"):
-                switch_session(session_name)
-        
-        create_new_session()
+            col1, col2 = st.columns([1, 1])  # Session name + Menu button
+            
+            with col1:
+                if st.button(
+                    f"📁 {session_name}",
+                    key=f"session_{session_name}",
+                    help="Switch to this session",
+                    use_container_width=True):
+                        switch_session(session_name)
 
-        if st.button("🗑 Delete Current Chat"):
-            delete_session(st.session_state["active_session"])
+            with col2:
+                menu_option = st.selectbox(
+                    "⋮", 
+                    ["Options", "✏️ Rename", "🗑 Delete"], 
+                    key=f"menu_{session_name}", 
+                    label_visibility="collapsed"
+                )
+                
+                if menu_option == "✏️ Rename":
+                    rename_session(session_name)
+                elif menu_option == "🗑 Delete":
+                    delete_session(session_name)
+        
+        st.markdown("---")
+        create_new_session()
 
 def display_chat():
     """Displays the chat interface for the active session."""
