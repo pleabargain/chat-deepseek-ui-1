@@ -1,7 +1,9 @@
-import re
+import re, os, json
 import base64
 import streamlit as st
+from const import CHAT_HISTORY_FILE
 
+# 🔹 Utility functions
 def get_base64_image(image_path):
     """Encodes an image as a base64 string."""
     with open(image_path, "rb") as image_file:
@@ -40,14 +42,42 @@ def load_chat_history():
             return json.load(file)
     return [{"role": "system", "content": "You are a helpful assistant."}]
 
+# def save_chat_history():
+#     """Saves chat history to a file."""
+#     with open(CHAT_HISTORY_FILE, "w") as file:
+#         json.dump(st.session_state["messages"], file)
+
 def save_chat_history():
-    """Saves chat history to a file."""
-    with open(CHAT_HISTORY_FILE, "w") as file:
-        json.dump(st.session_state["messages"], file)
+    """Saves the chat history for the active session."""
+    if "messages" in st.session_state and "active_session" in st.session_state:
+        save_json_file(CHAT_HISTORY_FILE, st.session_state["messages"])
+
+def load_json_file(filename, default_value):
+    """Loads JSON data from a file, handling corruption and missing files."""
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r") as file:
+                data = json.load(file)
+                return data if isinstance(data, type(default_value)) else default_value
+        except (json.JSONDecodeError, ValueError):
+            pass  # Handle file corruption gracefully
+    return default_value
+
+def save_json_file(filename, data):
+    """Saves JSON data to a file safely."""
+    with open(filename, "w") as file:
+        json.dump(data, file, indent=4)
 
 def display_chat_history():
-    """Displays previous chat messages, excluding system messages."""
-    for message in st.session_state.get("messages", []):
+    """Displays previous chat messages for the active session, excluding system messages."""
+    active_session = st.session_state.get("active_session", "Default")
+
+    # Ensure session exists in messages
+    if active_session not in st.session_state["messages"]:
+        st.session_state["messages"][active_session] = []
+
+    # Iterate over messages of the active session
+    for message in st.session_state["messages"][active_session]:
         if message["role"] != "system":
             display_message(message)
 
