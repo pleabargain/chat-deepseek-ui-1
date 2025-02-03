@@ -72,6 +72,10 @@ def display_chat_history():
     """Displays previous chat messages for the active session, excluding system messages."""
     active_session = st.session_state.get("active_session", "Default")
 
+    # ✅ Ensure messages exist in session state
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = {}  # Initialize messages as an empty dictionary
+
     # Ensure session exists in messages
     if active_session not in st.session_state["messages"]:
         st.session_state["messages"][active_session] = []

@@ -4,6 +4,7 @@ from input_handle import handle_user_input
 from const import DEFAULT_MESSAGE
 from sessions import create_new_session, rename_session, delete_session, switch_session
 from utils import display_chat_history, get_base64_image
+from config import save_session, get_session, redis_client, get_db_connection
 
 ### --- UI HEADER --- ###
 def render_ui():
@@ -38,33 +39,34 @@ def render_sidebar_header():
 ### --- SESSION MANAGEMENT --- ###
 def render_session_management():
     """Displays session switching and management options."""
-    for session_name in st.session_state["sessions"]:
-        col1, col2 = st.columns([4, 1])  # Adjusted column proportions for better layout
+    with st.sidebar:
+        # Fetch sessions from database
+        with get_db_connection() as conn, conn.cursor() as cur:
+            cur.execute("SELECT name FROM sessions;")
+            sessions = [row[0] for row in cur.fetchall()]
 
-        with col1:
-            if st.button(
-                f"📁 {session_name}",
-                key=f"session_{session_name}",
-                help="Switch to this session",
-                use_container_width=True
-            ):
-                switch_session(session_name)
-
-        with col2:
-            action = st.selectbox(
-                "⋮",
-                ["", "✏️ Rename", "🗑 Delete"],
-                key=f"menu_{session_name}",
-                label_visibility="collapsed"
-            )
+        for session_name in sessions:
+            col1, col2 = st.columns([4, 1])
             
-            if action == "✏️ Rename":
-                rename_session(session_name)
-            elif action == "🗑 Delete":
-                delete_session(session_name)
+            with col1:
+                if st.button(f"📁 {session_name}", key=f"session_{session_name}", help="Switch session", use_container_width=True):
+                    switch_session(session_name)
 
-    st.markdown("---")
-    create_new_session()
+            with col2:
+                action = st.selectbox(
+                    "⋮",
+                    ["", "✏️ Rename", "🗑 Delete"],
+                    key=f"menu_{session_name}",
+                    label_visibility="collapsed"
+                )
+                
+                if action == "✏️ Rename":
+                    rename_session(session_name)
+                elif action == "🗑 Delete":
+                    delete_session(session_name)
+
+        st.markdown("---")
+        create_new_session()
 
 ### --- CHAT INTERFACE --- ###
 def display_chat():
