@@ -5,11 +5,17 @@ from utils import process_stream, display_assistant_message, display_message, sa
 
 def handle_user_input():
     """Handles user input and generates the assistant's response."""
-    # Model selection dropdown
+    
+    # Initialize model in session_state
+    if "model" not in st.session_state:
+        st.session_state["model"] = DEFAULT_MODEL
+
+    # Model selection dropdown (persisting selection)
     model_choice = st.selectbox(
         "Choose a model", AVAILABLE_MODELS,
-        index=AVAILABLE_MODELS.index(DEFAULT_MODEL)
+        index=AVAILABLE_MODELS.index(st.session_state["model"])
     )
+    st.session_state["model"] = model_choice  # Save selection
 
     user_input = st.chat_input("💬 Type your message here...")
     if user_input:
@@ -25,7 +31,7 @@ def handle_user_input():
         save_chat_history()  # Save after user input
 
         with st.chat_message("assistant"):
-            chat_model = get_chat_model(model_name=model_choice)
+            chat_model = get_chat_model(model_name=st.session_state["model"])  # Use stored model
             stream = chat_model(st.session_state["messages"][active_session])  # Pass only active session messages
             thinking_content = process_stream(stream, "🤔 Thinking...")
             response_content = process_stream(stream, "💡 Responding...")

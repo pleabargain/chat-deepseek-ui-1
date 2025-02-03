@@ -6,4 +6,4 @@ DEFAULT_MESSAGE = {
 
 # Default model and available models
 DEFAULT_MODEL = "deepseek-r1"
-AVAILABLE_MODELS = ["deepseek-r1", "deepseek-v3"]
+AVAILABLE_MODELS = ["deepseek-r1", "deepseek-v3", "deepseek-coder"]
