@@ -1,7 +1,10 @@
-import re, os, json
+import re
+import os
+import json
 import base64
 import streamlit as st
 from const import CHAT_HISTORY_FILE
+
 
 # 🔹 Utility functions
 def get_base64_image(image_path):
@@ -9,9 +12,11 @@ def get_base64_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode()
 
+
 def clean_tags(content, tag="think"):
     """Removes specified XML-like tags from content."""
     return re.sub(fr"</?{tag}>", "", content)
+
 
 def display_message(message):
     """Displays a user or assistant message in the chat interface with highlighted styling."""
@@ -26,14 +31,17 @@ def display_message(message):
         </div>
     """, unsafe_allow_html=True)
 
+
 def display_assistant_message(content):
     """Handles the display of the assistant's message, including 'thinking' content."""
     think_content = re.search(r"<think>(.*?)</think>", content, re.DOTALL)
     if think_content:
         with st.expander("🤔 Thinking..."):
-            st.markdown(f"<div style='color: #666; font-style: italic;'>{clean_tags(think_content.group(0))}</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='color: #666; font-style: italic;'>{clean_tags(think_content.group(0))}</div>", unsafe_allow_html=True)
         content = content.replace(think_content.group(0), "")
     display_message({"role": "assistant", "content": content})
+
 
 def load_chat_history():
     """Loads chat history from a file if available."""
@@ -47,10 +55,12 @@ def load_chat_history():
 #     with open(CHAT_HISTORY_FILE, "w") as file:
 #         json.dump(st.session_state["messages"], file)
 
+
 def save_chat_history():
     """Saves the chat history for the active session."""
     if "messages" in st.session_state and "active_session" in st.session_state:
         save_json_file(CHAT_HISTORY_FILE, st.session_state["messages"])
+
 
 def load_json_file(filename, default_value):
     """Loads JSON data from a file, handling corruption and missing files."""
@@ -63,10 +73,12 @@ def load_json_file(filename, default_value):
             pass  # Handle file corruption gracefully
     return default_value
 
+
 def save_json_file(filename, data):
     """Saves JSON data to a file safely."""
     with open(filename, "w") as file:
         json.dump(data, file, indent=4)
+
 
 def display_chat_history():
     """Displays previous chat messages for the active session, excluding system messages."""
@@ -74,7 +86,8 @@ def display_chat_history():
 
     # ✅ Ensure messages exist in session state
     if "messages" not in st.session_state:
-        st.session_state["messages"] = {}  # Initialize messages as an empty dictionary
+        # Initialize messages as an empty dictionary
+        st.session_state["messages"] = {}
 
     # Ensure session exists in messages
     if active_session not in st.session_state["messages"]:
@@ -85,6 +98,7 @@ def display_chat_history():
         if message["role"] != "system":
             display_message(message)
 
+
 def process_stream(stream, status_text):
     """Processes assistant response stream efficiently with improved UI."""
     placeholder = st.empty()
@@ -93,5 +107,6 @@ def process_stream(stream, status_text):
         for chunk in stream:
             chunk_content = chunk["message"].get("content", "")
             content += chunk_content
-            placeholder.markdown(f"<div style='color: #666; font-style: italic;'>{clean_tags(content)}</div>", unsafe_allow_html=True)
+            placeholder.markdown(
+                f"<div style='color: #666; font-style: italic;'>{clean_tags(content)}</div>", unsafe_allow_html=True)
     return content
