@@ -30,6 +30,13 @@ def get_session(name):
         return cur.fetchone()
 
 
+# Fetch all session names
+def get_all_sessions():
+    with get_db_connection() as conn, conn.cursor() as cur:
+        cur.execute("SELECT name FROM sessions;")
+        return [row[0] for row in cur.fetchall()]
+
+
 # Save message
 def save_message(session_id, role, content):
     with get_db_connection() as conn, conn.cursor() as cur:

@@ -32,9 +32,13 @@ def handle_user_input():
         redis_client.set(cache_key, json.dumps(chat_history),
                          ex=300)  # Cache for 5 minutes
 
+    # 🛠 Ensure messages are properly formatted before sending to chat model
+    formatted_chat_history = [
+        {"role": msg[0], "content": msg[1]} for msg in chat_history]
+
     # Display chat history
-    for msg in chat_history:
-        display_message({"role": msg[0], "content": msg[1]})
+    for msg in formatted_chat_history:
+        display_message(msg)
 
     # Get user input
     user_input = st.chat_input("💬 Type your message here...")
@@ -50,8 +54,10 @@ def handle_user_input():
         # Generate response
         with st.chat_message("assistant"):
             chat_model = get_chat_model(model_name=selected_model)
-            stream = chat_model(
-                chat_history + [{"role": "user", "content": user_input}])
+
+            # 🛠 FIX: Pass correctly formatted history to the chat model
+            stream = chat_model(formatted_chat_history +
+                                [{"role": "user", "content": user_input}])
 
             response_content = process_stream(stream, "💡 Responding...")
 

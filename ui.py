@@ -7,12 +7,14 @@ from config import get_db_connection
 
 def render_ui():
     """Renders the main UI header with an image and title."""
+    session_name = st.session_state.get("active_session", "Default")
     image_base64 = get_base64_image("assets/deep-seek.png")
+
     st.markdown(f"""
-    <div style='text-align: center;'>
-        <img src="data:image/png;base64,{image_base64}" width="150"/>
-        <h1>🤖 Mini ChatGPT</h1>
-        <h4>With an interactive thinking UI! 💡</h4>
+    <div style='text-align: center; padding: 20px;'>
+        <img src="data:image/png;base64,{image_base64}" width="120" style="margin-bottom: 10px;"/>
+        <h1 style="color: #333; margin-bottom: 5px;">🤖 Mini ChatGPT</h1>
+        <h4 style="color: #666; font-weight: normal;">💬 Session: <span style="color: #0078FF;">{session_name}</span></h4>
     </div>
     """, unsafe_allow_html=True)
 
