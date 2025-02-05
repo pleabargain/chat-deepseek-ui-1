@@ -30,7 +30,7 @@ def initialize_session():
         # Ensure at least one session exists
         if not st.session_state["sessions"]:
             default_session_name = "Default"
-            default_model = "deepseek-r1"
+            default_model = DEFAULT_MODEL
             cursor.execute("INSERT INTO sessions (name, model) VALUES (%s, %s) RETURNING id;",
                            (default_session_name, default_model))
             db_conn.commit()

@@ -8,8 +8,12 @@ DEFAULT_MESSAGE = {
 }
 
 # Default model and available models
-DEFAULT_MODEL = "deepseek-r1"
-AVAILABLE_MODELS = ["deepseek-r1", "deepseek-v3", "deepseek-coder"]
+DEFAULT_MODEL = "deepseek-r1:latest"
+AVAILABLE_MODELS = [
+    "deepseek-r1:latest",
+    "deepseek-v3",
+    "deepseek-coder"
+]
 
 # Load environment variables from the .env file
 load_dotenv()
