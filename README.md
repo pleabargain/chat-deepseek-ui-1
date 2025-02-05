@@ -27,6 +27,12 @@ git clone https://github.com/ductnn/chat-deepseek-ui.git
 cd chat-deepseek-ui
 ```
 
+Build postgres database and redis:
+```sh
+# Use docker-compose
+docker-compose up -d
+```
+
 Install required packages:
 ```sh
 pip install streamlit ollama
@@ -36,6 +42,15 @@ If you still get build errors in package `pyarrow`, try installing `pyarrow`
 as a binary:
 ```sh
 pip install --only-binary=:all: pyarrow
+```
+
+Create file `.env`, or copy from `.env.example` and fill in your database credentials:
+```sh
+DB_NAME=mydatabase
+DB_USER=myuser
+DB_PASSWORD=mypassword
+DB_HOST=localhost
+DB_PORT=5432
 ```
 
 Run the app:
