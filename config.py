@@ -1,6 +1,6 @@
 import psycopg2
 import redis
-from const import DB_PARAMS
+from const import DB_PARAMS, REDIS_URL
 
 
 def get_db_connection():
@@ -8,7 +8,7 @@ def get_db_connection():
 
 
 # Redis Connection
-redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
+redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
 
 # Save session details

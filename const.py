@@ -26,3 +26,6 @@ DB_PARAMS = {
     "host": os.getenv("DB_HOST"),
     "port": os.getenv("DB_PORT")
 }
+
+# Redis Connection
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
