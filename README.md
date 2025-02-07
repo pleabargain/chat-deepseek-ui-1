@@ -1,5 +1,9 @@
 # Chat DeepSeek UI
 
+# repo
+https://github.com/pleabargain/chat-deepseek-ui-1
+
+
 A simple web-based chat interface powered by Ollama's DeepSeek model. This tool provides an interactive, real-time chatting experience with the assistant, using Streamlit for the frontend. The assistant processes and streams responses back to the user, ensuring a seamless and engaging interaction.
 
 ## System Architecture
